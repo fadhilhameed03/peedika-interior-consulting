@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+@theme {
+  --color-emerald-dark: #112925;
+  --color-emerald: #1B3B36;
+  --color-emerald-light: #2D5A52;
+  --color-sand: #F4F1EA;
+  --color-sand-dark: #E2DCD0;
+  --color-brass: #C5A880;
+  --color-brass-light: #D9C3A3;
+
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: 'Playfair Display', serif;
+}
+
+body {
+  background-color: var(--color-sand);
+  color: var(--color-emerald-dark);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Shutter animation */
+@keyframes shutterOpen {
+  0% {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+  100% {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+.shutter-panel {
+  animation: shutterOpen 0.18s ease-in-out forwards;
+}
