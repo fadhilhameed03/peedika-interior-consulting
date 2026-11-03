@@ -62,9 +62,9 @@ const About = () => (
             marginBottom: '24px',
           }}
         >
-          In traditional Kerala trade, a <em style={{ color: '#1B3B36', fontStyle: 'italic' }}>Peevika</em> was
+          In traditional Kerala trade, a <em style={{ color: '#1B3B36', fontStyle: 'italic' }}>Peedika</em> was
           a dynamic marketplace built with honesty, solid craftsmanship, and community connection.
-          At Peevika Interior Consultants, we channel that exact ethos into contemporary retail
+          At Peedika Interior Consultants, we channel that exact ethos into contemporary retail
           spaces across India.
         </p>
         <p

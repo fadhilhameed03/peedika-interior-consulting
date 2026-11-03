@@ -30,7 +30,7 @@ const Navbar = ({ visible }) => {
             onMouseEnter={e => e.target.style.color = '#F4F1EA'}
             onMouseLeave={e => e.target.style.color = '#C5A880'}
           >
-            hello@peevika.com
+            hello@peedika.com
           </a>
         </div>
       </div>
@@ -65,7 +65,7 @@ const Navbar = ({ visible }) => {
               className="font-serif"
               style={{ fontSize: '1.6rem', fontWeight: 600, color: '#0e1f1c', letterSpacing: '0.06em' }}
             >
-              PEEVIKA
+              PEEDIKA
             </div>
             <div
               style={{

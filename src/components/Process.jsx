@@ -20,7 +20,7 @@ const Process = () => (
         </span>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
           <h2 className="font-serif" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 500, color: '#0e1f1c', letterSpacing: '-0.01em', lineHeight: 1.2 }}>
-            The Peevika Execution<br />Flowchart
+            The Peedika Execution<br />Flowchart
           </h2>
           <p style={{ fontSize: '0.9rem', color: 'rgba(14,31,28,0.6)', maxWidth: '320px', lineHeight: 1.6 }}>
             A structured 7-step roadmap from initial concept to your store's grand opening.

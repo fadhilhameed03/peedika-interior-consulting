@@ -24,7 +24,7 @@ const Footer = () => (
           className="font-serif"
           style={{ fontSize: '1.1rem', fontWeight: 600, color: '#F4F1EA', letterSpacing: '0.08em' }}
         >
-          PEEVIKA
+          PEEDIKA
         </span>
         <span
           style={{
@@ -39,7 +39,7 @@ const Footer = () => (
         </span>
       </div>
       <p style={{ fontSize: '0.75rem', color: 'rgba(244,241,234,0.35)', letterSpacing: '0.02em' }}>
-        © 2026 Peevika Interior Consultants. We build shops that can sell.
+        © 2026 Peedika Interior Consultants. We build shops that can sell.
       </p>
     </div>
   </footer>

@@ -110,7 +110,7 @@ const ShutterOverlay = ({ scrollProgress }) => {
                 textShadow: '0 2px 40px rgba(197,168,128,0.2)',
               }}
             >
-              PEEVIKA
+              PEEDIKA
             </div>
             <div
               style={{

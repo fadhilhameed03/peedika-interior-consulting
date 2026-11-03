@@ -50,7 +50,7 @@ const Contact = () => {
             {[
               { icon: '📍', text: 'Headquarters: Kochi, Kerala' },
               { icon: '🚀', text: 'Pan-India Execution Partnerships' },
-              { icon: '✉️', text: 'hello@peevika.com' },
+              { icon: '✉️', text: 'hello@peedika.com' },
             ].map(item => (
               <div key={item.text} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <span style={{ fontSize: '1rem' }}>{item.icon}</span>
