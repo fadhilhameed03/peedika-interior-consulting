@@ -1,209 +1,410 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 
 /**
- * ShutterOverlay — a scroll-driven shop shutter.
- * As the user scrolls through the "shutter zone" (first 100vh of document),
- * the shutter panel translates upward, revealing the site behind it.
+ * ShutterOverlay — Realistic Kerala Commercial Store Roller Shutter.
+ *
+ * As the user scrolls:
+ * - The shutter curtain rolls UP toward the top casing.
+ * - The painted lettering, slats, and bottom rail all move up together.
+ * - A warm golden light spills from beneath the bottom rail as it cracks open.
+ * - Clicking the shutter or handle smoothly lifts it open.
  */
-const ShutterOverlay = ({ scrollProgress }) => {
-  // scrollProgress: 0 = fully closed, 1 = fully open
-  const translateY = `-${scrollProgress * 100}vh`;
-  const opacity = scrollProgress >= 1 ? 0 : 1;
-  const pointerEvents = scrollProgress >= 1 ? 'none' : 'all';
+const ShutterOverlay = ({ progress, onOpenClick }) => {
+  // progress: 0 (closed) -> 1 (fully open)
+  // Translate shutter curtain up by 100%
+  const translateY = -(progress * 100);
 
-  const SLAT_COUNT = 20;
+  // Bottom light spill intensity increases as the shutter begins to lift
+  const lightSpillOpacity = progress > 0 && progress < 0.95
+    ? Math.min(progress * 2.5, 0.8)
+    : 0;
 
   return (
     <div
       style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100vh',
-        zIndex: 9000,
-        transform: `translateY(${translateY})`,
-        opacity,
-        pointerEvents,
-        transition: 'opacity 0.3s ease',
-        willChange: 'transform',
+        position: 'absolute',
+        inset: 0,
+        zIndex: 50,
+        pointerEvents: progress >= 1 ? 'none' : 'auto',
+        overflow: 'hidden',
       }}
     >
-      {/* Shutter body */}
+      {/* ── TOP SHUTTER HOOD / DRUM CASING ── */}
       <div
         style={{
-          width: '100%',
-          height: '100%',
-          background: 'linear-gradient(180deg, #0a1614 0%, #0e201c 40%, #112925 100%)',
-          position: 'relative',
-          overflow: 'hidden',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '24px',
+          zIndex: 60,
+          background: 'linear-gradient(180deg, #091311 0%, #162a26 60%, #0c1815 100%)',
+          borderBottom: '2px solid rgba(197, 168, 128, 0.35)',
+          boxShadow: '0 6px 20px rgba(0, 0, 0, 0.7)',
           display: 'flex',
-          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
         }}
       >
-        {/* Horizontal slat lines */}
+        {/* Rivets along the casing */}
+        <div style={{ display: 'flex', gap: '32px', opacity: 0.4 }}>
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div
+              key={i}
+              style={{
+                width: '5px',
+                height: '5px',
+                borderRadius: '50%',
+                background: '#C5A880',
+                boxShadow: 'inset 0 1px 1px rgba(0,0,0,0.8)',
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* ── LEFT & RIGHT GUIDE TRACKS ── */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          left: 0,
+          width: '18px',
+          zIndex: 58,
+          background: 'linear-gradient(90deg, #070e0d 0%, #182e29 60%, #0a1412 100%)',
+          borderRight: '1px solid rgba(197, 168, 128, 0.25)',
+          boxShadow: 'inset -2px 0 6px rgba(0,0,0,0.6)',
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          right: 0,
+          width: '18px',
+          zIndex: 58,
+          background: 'linear-gradient(270deg, #070e0d 0%, #182e29 60%, #0a1412 100%)',
+          borderLeft: '1px solid rgba(197, 168, 128, 0.25)',
+          boxShadow: 'inset 2px 0 6px rgba(0,0,0,0.6)',
+        }}
+      />
+
+      {/* ── THE ROLLING SHUTTER CURTAIN ── */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '100%',
+          transform: `translate3d(0, ${translateY}%, 0)`,
+          willChange: 'transform',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          background: '#0e1f1c',
+          boxShadow: '0 25px 60px rgba(0,0,0,0.85)',
+          cursor: progress < 0.2 ? 'pointer' : 'default',
+        }}
+        onClick={progress < 0.2 ? onOpenClick : undefined}
+      >
+        {/* Corrugated horizontal metal slats texture */}
         <div
           style={{
             position: 'absolute',
             inset: 0,
             backgroundImage: `
               repeating-linear-gradient(
-                to bottom,
-                transparent 0px,
-                transparent 36px,
-                rgba(255,255,255,0.04) 36px,
-                rgba(255,255,255,0.04) 37px,
-                rgba(0,0,0,0.25) 37px,
-                rgba(0,0,0,0.25) 40px,
-                rgba(255,255,255,0.02) 40px,
-                rgba(255,255,255,0.02) 41px,
-                transparent 41px,
-                transparent 44px
+                180deg,
+                #162a26 0px,
+                #1e3833 4px,
+                #294c45 8px,
+                #19302b 16px,
+                #0f1e1b 22px,
+                #081210 28px,
+                #162a26 32px
               )
             `,
+            backgroundSize: '100% 32px',
+            opacity: 0.95,
           }}
         />
 
-        {/* Vertical guide tracks */}
+        {/* Vertical slat lines for metal paneling */}
         <div
           style={{
             position: 'absolute',
-            top: 0, bottom: 0,
-            left: '12px',
-            width: '8px',
-            background: 'linear-gradient(90deg, #0a1614, #1a3530, #0a1614)',
-            borderRight: '1px solid rgba(197,168,128,0.15)',
+            inset: 0,
+            backgroundImage: 'repeating-linear-gradient(90deg, transparent 0, transparent 240px, rgba(0,0,0,0.2) 240px, rgba(0,0,0,0.2) 242px)',
+            opacity: 0.6,
           }}
         />
+
+        {/* Ambient metal sheen / lighting across the shutter */}
         <div
           style={{
             position: 'absolute',
-            top: 0, bottom: 0,
-            right: '12px',
-            width: '8px',
-            background: 'linear-gradient(90deg, #0a1614, #1a3530, #0a1614)',
-            borderLeft: '1px solid rgba(197,168,128,0.15)',
+            inset: 0,
+            background: 'radial-gradient(ellipse at 50% 45%, rgba(197,168,128,0.12) 0%, transparent 70%)',
+            pointerEvents: 'none',
           }}
         />
 
-        {/* Subtle side shadows */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: 'linear-gradient(90deg, rgba(0,0,0,0.4) 0%, transparent 8%, transparent 92%, rgba(0,0,0,0.4) 100%)',
-          pointerEvents: 'none',
-        }} />
+        {/* ── SHUTTER BRANDING & CONTENT (painted onto the slats) ── */}
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 10,
+            margin: 'auto',
+            padding: '40px 24px',
+            textAlign: 'center',
+            maxWidth: '780px',
+            userSelect: 'none',
+          }}
+        >
+          {/* Top Kerala Heritage Badge */}
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '6px 16px',
+              borderRadius: '999px',
+              background: 'rgba(10, 22, 19, 0.75)',
+              border: '1px solid rgba(197, 168, 128, 0.3)',
+              marginBottom: '24px',
+              backdropFilter: 'blur(4px)',
+            }}
+          >
+            <span style={{ fontSize: '0.7rem' }}>🏛️</span>
+            <span
+              style={{
+                fontSize: '0.62rem',
+                letterSpacing: '0.35em',
+                textTransform: 'uppercase',
+                color: '#C5A880',
+                fontWeight: 600,
+              }}
+            >
+              Rooted in Kerala • Executing Pan-India
+            </span>
+          </div>
 
-        {/* Center content */}
-        <div style={{ textAlign: 'center', position: 'relative', zIndex: 2, padding: '0 24px' }}>
-          {/* Logo */}
-          <div style={{ marginBottom: '32px' }}>
-            <div
+          {/* Main Stenciled Brand Name */}
+          <div style={{ position: 'relative', marginBottom: '8px' }}>
+            <h1
               className="font-serif"
               style={{
-                fontSize: 'clamp(2.5rem, 8vw, 5rem)',
-                fontWeight: 600,
+                fontSize: 'clamp(3rem, 10vw, 6.5rem)',
+                fontWeight: 700,
                 color: '#F4F1EA',
-                letterSpacing: '0.12em',
+                letterSpacing: '0.14em',
                 lineHeight: 1,
-                textShadow: '0 2px 40px rgba(197,168,128,0.2)',
+                margin: 0,
+                textShadow: '0 3px 20px rgba(0,0,0,0.8), 0 0 40px rgba(197,168,128,0.25)',
               }}
             >
               PEEDIKA
-            </div>
-            <div
-              style={{
-                fontSize: 'clamp(0.6rem, 2vw, 0.75rem)',
-                letterSpacing: '0.4em',
-                textTransform: 'uppercase',
-                color: '#C5A880',
-                marginTop: '6px',
-                fontWeight: 500,
-              }}
-            >
-              Interior Consultants
-            </div>
+            </h1>
           </div>
 
-          {/* Tagline */}
-          <div
-            className="font-serif"
+          {/* Subtitle */}
+          <p
             style={{
-              fontSize: 'clamp(1rem, 3vw, 1.5rem)',
-              color: 'rgba(244,241,234,0.55)',
-              fontStyle: 'italic',
-              marginBottom: '56px',
-              fontWeight: 400,
+              fontSize: 'clamp(0.68rem, 2vw, 0.85rem)',
+              letterSpacing: '0.45em',
+              textTransform: 'uppercase',
+              color: '#C5A880',
+              fontWeight: 600,
+              marginBottom: '20px',
             }}
           >
-            We build shops that can sell.
+            Interior Consultants
+          </p>
+
+          {/* Decorative Divider */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '16px',
+              margin: '0 auto 24px',
+              maxWidth: '320px',
+            }}
+          >
+            <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(197,168,128,0.5))' }} />
+            <span style={{ color: '#C5A880', fontSize: '0.8rem' }}>✦</span>
+            <div style={{ flex: 1, height: '1px', background: 'linear-gradient(270deg, transparent, rgba(197,168,128,0.5))' }} />
           </div>
 
-          {/* Scroll cue */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+          {/* Core Philosophy Tagline */}
+          <p
+            className="font-serif"
+            style={{
+              fontSize: 'clamp(1.1rem, 3.2vw, 1.8rem)',
+              color: 'rgba(244, 241, 234, 0.85)',
+              fontStyle: 'italic',
+              fontWeight: 400,
+              marginBottom: '40px',
+              textShadow: '0 2px 10px rgba(0,0,0,0.7)',
+            }}
+          >
+            "We build shops that can sell."
+          </p>
+
+          {/* Scroll cue / Click to open */}
+          <div
+            style={{
+              display: 'inline-flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '10px 20px',
+              borderRadius: '12px',
+              background: 'rgba(7, 16, 14, 0.65)',
+              border: '1px solid rgba(197, 168, 128, 0.25)',
+              transition: 'all 0.3s ease',
+            }}
+          >
             <span
               style={{
-                fontSize: '0.65rem',
-                letterSpacing: '0.3em',
+                fontSize: '0.62rem',
+                letterSpacing: '0.28em',
                 textTransform: 'uppercase',
-                color: 'rgba(197,168,128,0.7)',
-                fontWeight: 500,
+                color: '#C5A880',
+                fontWeight: 600,
               }}
             >
-              Scroll to open
+              Scroll down to open store
             </span>
-            {/* Animated arrow */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'center' }}>
-              {[0, 1, 2].map((i) => (
-                <div
-                  key={i}
-                  style={{
-                    width: '18px',
-                    height: '2px',
-                    background: `rgba(197,168,128,${0.3 + i * 0.25})`,
-                    transform: 'rotate(0deg)',
-                    clipPath: 'polygon(0 0, 100% 0, 50% 100%)',
-                    animation: `pulse-arrow 1.5s ease-in-out ${i * 0.2}s infinite`,
-                  }}
-                />
-              ))}
+            {/* Animated Chevron Arrow */}
+            <div
+              style={{
+                width: '18px',
+                height: '18px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                animation: 'bounceUpDown 1.8s ease-in-out infinite',
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C5A880" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
             </div>
           </div>
         </div>
 
-        {/* Bottom bar — the shutter stopper rail */}
+        {/* ── HEAVY BOTTOM PULL RAIL (T-BAR / BOTTOM ANGLE) ── */}
         <div
           style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: '18px',
-            background: 'linear-gradient(180deg, #0a1614 0%, #1f3d38 50%, #0d1e1b 100%)',
-            borderTop: '2px solid rgba(197,168,128,0.3)',
-            boxShadow: '0 -4px 20px rgba(0,0,0,0.5)',
+            position: 'relative',
+            zIndex: 15,
+            width: '100%',
+            height: '42px',
+            background: 'linear-gradient(180deg, #1d3530 0%, #0e1c19 50%, #08110f 100%)',
+            borderTop: '2px solid rgba(197, 168, 128, 0.55)',
+            borderBottom: '3px solid #050b0a',
+            boxShadow: '0 -4px 15px rgba(0,0,0,0.6), 0 8px 25px rgba(0,0,0,0.8)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0 40px',
           }}
-        />
+        >
+          {/* Left Handle */}
+          <div
+            style={{
+              width: '54px',
+              height: '12px',
+              borderRadius: '3px',
+              background: 'linear-gradient(180deg, #C5A880 0%, #8c714c 60%, #5a472e 100%)',
+              border: '1px solid #d9c3a3',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.6)',
+            }}
+          />
 
-        {/* Progress indicator */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '18px',
-            left: 0,
-            height: '3px',
-            width: `${scrollProgress * 100}%`,
-            background: 'linear-gradient(90deg, #C5A880, #D9C3A3)',
-            transition: 'width 0.1s linear',
-          }}
-        />
+          {/* Center Lock / Hasp with "LIFT TO OPEN" */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '2px 16px',
+              background: 'rgba(0,0,0,0.4)',
+              borderRadius: '4px',
+              border: '1px solid rgba(197,168,128,0.3)',
+            }}
+          >
+            <div
+              style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#C5A880',
+                boxShadow: '0 0 6px #C5A880',
+              }}
+            />
+            <span
+              style={{
+                fontSize: '0.55rem',
+                letterSpacing: '0.3em',
+                textTransform: 'uppercase',
+                color: '#C5A880',
+                fontWeight: 700,
+              }}
+            >
+              LIFT TO ENTER
+            </span>
+            <div
+              style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#C5A880',
+                boxShadow: '0 0 6px #C5A880',
+              }}
+            />
+          </div>
+
+          {/* Right Handle */}
+          <div
+            style={{
+              width: '54px',
+              height: '12px',
+              borderRadius: '3px',
+              background: 'linear-gradient(180deg, #C5A880 0%, #8c714c 60%, #5a472e 100%)',
+              border: '1px solid #d9c3a3',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.6)',
+            }}
+          />
+        </div>
       </div>
 
+      {/* ── GOLDEN LIGHT SPILL UNDERNEATH THE OPENING SHUTTER ── */}
+      <div
+        style={{
+          position: 'absolute',
+          left: '18px',
+          right: '18px',
+          top: `calc(${100 + translateY}% - 6px)`,
+          height: '50px',
+          background: 'linear-gradient(180deg, rgba(217, 195, 163, 0.45) 0%, rgba(27, 59, 54, 0.15) 50%, transparent 100%)',
+          filter: 'blur(8px)',
+          opacity: lightSpillOpacity,
+          pointerEvents: 'none',
+          zIndex: 48,
+          transition: 'opacity 0.2s ease',
+        }}
+      />
+
       <style>{`
-        @keyframes pulse-arrow {
-          0%, 100% { opacity: 0.3; transform: translateY(0); }
-          50% { opacity: 1; transform: translateY(4px); }
+        @keyframes bounceUpDown {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(5px); }
         }
       `}</style>
     </div>

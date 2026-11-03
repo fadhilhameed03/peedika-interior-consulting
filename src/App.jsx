@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ShutterOverlay from './components/ShutterOverlay';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -11,75 +11,91 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import './index.css';
 
-// How many px of scroll to fully lift the shutter (== 1 viewport height)
-const SHUTTER_SCROLL_HEIGHT = typeof window !== 'undefined' ? window.innerHeight : 700;
-
 function App() {
-  const [scrollY, setScrollY] = useState(0);
-
-  const handleScroll = useCallback(() => {
-    setScrollY(window.scrollY);
-  }, []);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const entranceRef = useRef(null);
 
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [handleScroll]);
+    const handleScroll = () => {
+      if (!entranceRef.current) return;
+      const rect = entranceRef.current.getBoundingClientRect();
+      const scrollDistance = rect.height - window.innerHeight;
+      if (scrollDistance <= 0) return;
 
-  // scrollProgress: 0 = shutter fully closed, 1 = shutter fully open
-  const scrollProgress = Math.min(scrollY / SHUTTER_SCROLL_HEIGHT, 1);
-  const shutterOpen = scrollProgress >= 1;
+      const current = -rect.top;
+      const progress = Math.min(Math.max(current / scrollDistance, 0), 1);
+      setScrollProgress(progress);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Smooth scroll helper to lift shutter if user clicks it
+  const handleOpenClick = () => {
+    window.scrollTo({
+      top: window.innerHeight * 1.15,
+      behavior: 'smooth',
+    });
+  };
 
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif" }}>
-      {/* ── Scroll-driven shutter ── */}
-      <ShutterOverlay scrollProgress={scrollProgress} />
-
-      {/*
-        Spacer: occupies the scroll "zone" that drives the shutter.
-        The shutter is fixed, so this just creates scroll distance.
-        Once scrolled past, the site content is visible.
-      */}
-      <div
-        style={{
-          height: '100vh',
-          // Invisible — just creates the scroll room
-          pointerEvents: shutterOpen ? 'none' : 'all',
-        }}
-        aria-hidden="true"
-      />
-
-      {/* ── Site content (always rendered, revealed as shutter lifts) ── */}
-      <div
+    <div style={{ fontFamily: "'Inter', sans-serif", position: 'relative', background: '#F4F1EA' }}>
+      {/* ── STICKY ENTRANCE: SHUTTER + HERO REVEAL ── */}
+      <section
+        ref={entranceRef}
         style={{
           position: 'relative',
-          zIndex: 1,
-          // Sticky to top so it's always behind the shutter until revealed
-          marginTop: '-100vh',
-          // Lock body scroll hint
-          minHeight: '100vh',
+          height: '210vh', // Dedicated scroll runway for shutter opening
         }}
       >
-        {/* Shutter is still covering — blur site slightly for depth effect */}
         <div
           style={{
-            filter: shutterOpen ? 'none' : `blur(${(1 - scrollProgress) * 6}px)`,
-            transform: `scale(${0.97 + scrollProgress * 0.03})`,
-            transition: shutterOpen ? 'filter 0.3s ease, transform 0.3s ease' : 'none',
-            transformOrigin: 'top center',
+            position: 'sticky',
+            top: 0,
+            height: '100vh',
+            width: '100%',
+            overflow: 'hidden',
           }}
         >
-          <Navbar />
-          <Hero />
-          <Stats />
-          <About />
-          <Process />
-          <Services />
-          <Portfolio />
-          <Contact />
-          <Footer />
+          {/* THE STORE INTERIOR (Hero + Navbar revealed as shutter lifts) */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 20,
+              display: 'flex',
+              flexDirection: 'column',
+              // Content scrolls slightly up as shutter lifts for realistic depth
+              transform: `translate3d(0, ${(1 - scrollProgress) * 50}px, 0)`,
+              willChange: 'transform',
+            }}
+          >
+            <Navbar />
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <Hero />
+            </div>
+          </div>
+
+          {/* THE SHOP SHUTTER (Rolls up to the top as user scrolls) */}
+          <ShutterOverlay
+            progress={scrollProgress}
+            onOpenClick={handleOpenClick}
+          />
         </div>
-      </div>
+      </section>
+
+      {/* ── REST OF THE STORE WEBSITE (Seamlessly scrolls up after shutter opens) ── */}
+      <main style={{ position: 'relative', zIndex: 30, backgroundColor: '#F4F1EA' }}>
+        <Stats />
+        <About />
+        <Process />
+        <Services />
+        <Portfolio />
+        <Contact />
+        <Footer />
+      </main>
     </div>
   );
 }
