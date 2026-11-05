@@ -116,3 +116,19 @@ To ensure commercial compliance:
 - [ ] **Registered Legal Entity Name**: (e.g., *Peedika Interior Consultants LLP* or *Peedika Design Studio Pvt. Ltd.*)
 - [ ] **GST Number** *(Optional, if required on formal proposals/invoices)*
 - [ ] **Privacy Policy / Terms of Service**: Basic standard policy for lead collection.
+
+---
+
+## Summary Action Plan
+
+```mermaid
+flowchart TD
+    A["1. Gather Contact Info & WhatsApp"] --> B["2. Collect 4-6 Real Project Photos"]
+    B --> C["3. Decide Form Lead Destination (Email/WhatsApp)"]
+    C --> D["4. Review & Finalize Copy / Metrics"]
+    D --> E["5. Connect Custom Domain & Deploy"]
+```
+
+> [!TIP]
+> You do not need all items at once. Providing **Section 1 (Contact Info)**, **Section 3B (Project Photos)**, and **Section 5 (Lead Email)** is sufficient to make the website 100% functional.
+

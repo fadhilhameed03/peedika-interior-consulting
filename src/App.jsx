@@ -32,22 +32,22 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Smooth scroll helper to lift shutter if user clicks it
+  // Smooth scroll helper to lift shutter and project store forward
   const handleOpenClick = () => {
     window.scrollTo({
-      top: window.innerHeight * 1.15,
+      top: window.innerHeight * 1.3,
       behavior: 'smooth',
     });
   };
 
   return (
     <div style={{ fontFamily: "'Inter', sans-serif", position: 'relative', background: '#F4F1EA' }}>
-      {/* ── STICKY ENTRANCE: SHUTTER + HERO REVEAL ── */}
+      {/* ── STICKY ENTRANCE: SHUTTER + STORE PICTURE FORWARD PROJECTION ── */}
       <section
         ref={entranceRef}
         style={{
           position: 'relative',
-          height: '210vh', // Dedicated scroll runway for shutter opening
+          height: '240vh', // Generous runway for shutter opening + store picture projecting to front
         }}
       >
         <div
@@ -59,7 +59,7 @@ function App() {
             overflow: 'hidden',
           }}
         >
-          {/* THE STORE INTERIOR (Hero + Navbar revealed as shutter lifts) */}
+          {/* THE STORE INTERIOR (Hero + Navbar with store picture projecting from back to front) */}
           <div
             style={{
               position: 'absolute',
@@ -67,14 +67,12 @@ function App() {
               zIndex: 20,
               display: 'flex',
               flexDirection: 'column',
-              // Content scrolls slightly up as shutter lifts for realistic depth
-              transform: `translate3d(0, ${(1 - scrollProgress) * 50}px, 0)`,
               willChange: 'transform',
             }}
           >
             <Navbar />
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <Hero />
+              <Hero scrollProgress={scrollProgress} />
             </div>
           </div>
 
