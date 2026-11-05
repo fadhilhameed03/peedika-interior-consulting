@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 
 const Contact = () => {
-  const [form, setForm] = useState({ name: '', brand: '', city: '', message: '' });
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    brand: '',
+    city: '',
+    message: '',
+  });
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e) => {
@@ -90,18 +97,21 @@ const Contact = () => {
               </h3>
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                 {[
-                  { name: 'name', label: 'Your Name', placeholder: 'Rahul Menon' },
-                  { name: 'brand', label: 'Brand / Store Name', placeholder: 'e.g. Earth & Loom' },
-                  { name: 'city', label: 'Target City', placeholder: 'Mumbai / Bengaluru / Kochi' },
+                  { name: 'name', label: 'Your Name', placeholder: 'Rahul Menon', type: 'text', required: true },
+                  { name: 'email', label: 'Email ID', placeholder: 'rahul@example.com', type: 'email', required: true },
+                  { name: 'phone', label: 'Phone Number', placeholder: '+91 98765 43210', type: 'tel', required: true },
+                  /* Brand / Store Name commented out for now as requested */
+                  /* { name: 'brand', label: 'Brand / Store Name', placeholder: 'e.g. Earth & Loom', type: 'text', required: true }, */
+                  { name: 'city', label: 'Target City', placeholder: 'Mumbai / Bengaluru / Kochi', type: 'text', required: true },
                 ].map(field => (
                   <div key={field.name}>
                     <label style={{ display: 'block', fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 600, color: '#0e1f1c', marginBottom: '8px' }}>
                       {field.label}
                     </label>
                     <input
-                      type="text"
+                      type={field.type}
                       name={field.name}
-                      required
+                      required={field.required}
                       placeholder={field.placeholder}
                       value={form[field.name]}
                       onChange={e => setForm({ ...form, [e.target.name]: e.target.value })}
@@ -122,6 +132,35 @@ const Contact = () => {
                     />
                   </div>
                 ))}
+
+                {/* Explicitly commented out Brand / Store Name field block for easy restoration later */}
+                {/*
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 600, color: '#0e1f1c', marginBottom: '8px' }}>
+                    Brand / Store Name
+                  </label>
+                  <input
+                    type="text"
+                    name="brand"
+                    placeholder="e.g. Earth & Loom"
+                    value={form.brand}
+                    onChange={e => setForm({ ...form, brand: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      border: '1.5px solid rgba(14,31,28,0.15)',
+                      borderRadius: '10px',
+                      fontSize: '0.9rem',
+                      backgroundColor: '#ffffff',
+                      color: '#0e1f1c',
+                      outline: 'none',
+                      transition: 'border-color 0.2s',
+                      fontFamily: 'Inter, sans-serif',
+                    }}
+                  />
+                </div>
+                */}
+
                 <div>
                   <label style={{ display: 'block', fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 600, color: '#0e1f1c', marginBottom: '8px' }}>
                     Message (optional)
