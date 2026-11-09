@@ -42,6 +42,48 @@ function App() {
 
   return (
     <div style={{ fontFamily: "'Inter', sans-serif", position: 'relative', background: '#F4F1EA' }}>
+
+      {/* ── FLOATING WHATSAPP BUTTON ── */}
+      <a
+        href="https://wa.me/919562920796"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Chat with us on WhatsApp"
+        style={{
+          position: 'fixed',
+          bottom: '28px',
+          right: '28px',
+          zIndex: 99999,
+          width: '60px',
+          height: '60px',
+          borderRadius: '50%',
+          backgroundColor: '#25D366',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 4px 24px rgba(37,211,102,0.5)',
+          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+          textDecoration: 'none',
+          cursor: 'pointer',
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.transform = 'scale(1.12)';
+          e.currentTarget.style.boxShadow = '0 6px 32px rgba(37,211,102,0.7)';
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.transform = 'scale(1)';
+          e.currentTarget.style.boxShadow = '0 4px 24px rgba(37,211,102,0.5)';
+        }}
+      >
+        {/* Clean WhatsApp icon — white phone bubble on transparent, button bg is green */}
+        <img
+          src="/whatsapp.svg"
+          alt="WhatsApp"
+          width="30"
+          height="30"
+          style={{ display: 'block' }}
+        />
+      </a>
       {/* ── STICKY ENTRANCE: SHUTTER + STORE PICTURE FORWARD PROJECTION ── */}
       <section
         ref={entranceRef}

@@ -93,10 +93,20 @@ const Contact = () => {
       }
 
       const results = await Promise.all(promises);
-      const allSuccessful = results.every((res) => res.ok);
+      const errors = [];
 
-      if (!allSuccessful) {
-        throw new Error('One or more email requests failed to send.');
+      for (let i = 0; i < results.length; i++) {
+        const res = results[i];
+        if (!res.ok) {
+          const text = await res.text();
+          const target = i === 0 ? 'Admin Alert' : 'Customer Auto-reply';
+          console.error(`EmailJS [${target}] Failed (${res.status}):`, text);
+          errors.push(`${target}: ${text || res.statusText}`);
+        }
+      }
+
+      if (errors.length > 0) {
+        throw new Error(errors.join(' | '));
       }
 
       setLoading(false);
@@ -105,7 +115,7 @@ const Contact = () => {
       console.error('Email submission error:', err);
       setLoading(false);
       setErrorMessage(
-        'There was an issue sending your message. Please reach out to us directly at hello@peedika.com.'
+        err.message || 'There was an issue sending your message. Please reach out to us directly at admin@peedikaconsultants.com.'
       );
     }
   };
@@ -200,9 +210,10 @@ const Contact = () => {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {[
-              { icon: '📍', title: 'Studio Headquarters', text: 'Kochi, Kerala • Executing Pan-India' },
-              { icon: '✉️', title: 'Direct Inquiries', text: 'hello@peedika.com' },
-              { icon: '🚀', title: 'Turnkey Delivery', text: 'Space Planning • 3D Walkthroughs • GFC Drawings' },
+              { icon: '📍', title: 'Studio Headquarters', text: 'Kochi, Kerala • Executing Pan-India', href: null },
+              { icon: '✉️', title: 'Direct Inquiries', text: 'admin@peedikaconsultants.com', href: 'mailto:admin@peedikaconsultants.com' },
+              { icon: '💬', title: 'WhatsApp', text: '+91 95629 20796', href: 'https://wa.me/919562920796' },
+              { icon: '🚀', title: 'Turnkey Delivery', text: 'Space Planning • 3D Walkthroughs • GFC Drawings', href: null },
             ].map((item) => (
               <div key={item.title} style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
                 <span style={{ fontSize: '1.2rem', marginTop: '2px' }}>{item.icon}</span>
@@ -210,9 +221,17 @@ const Contact = () => {
                   <span style={{ display: 'block', fontSize: '0.72rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(244,241,234,0.5)', fontWeight: 600 }}>
                     {item.title}
                   </span>
-                  <span style={{ fontSize: '0.92rem', color: '#C5A880', fontWeight: 400 }}>
-                    {item.text}
-                  </span>
+                  {item.href ? (
+                    <a href={item.href} target={item.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer"
+                      style={{ fontSize: '0.92rem', color: '#C5A880', fontWeight: 400, textDecoration: 'none' }}
+                      onMouseEnter={e => e.target.style.color = '#F4F1EA'}
+                      onMouseLeave={e => e.target.style.color = '#C5A880'}
+                    >
+                      {item.text}
+                    </a>
+                  ) : (
+                    <span style={{ fontSize: '0.92rem', color: '#C5A880', fontWeight: 400 }}>{item.text}</span>
+                  )}
                 </div>
               </div>
             ))}

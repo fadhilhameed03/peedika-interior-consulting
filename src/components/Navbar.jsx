@@ -30,7 +30,7 @@ const Navbar = ({ visible }) => {
             onMouseEnter={e => e.target.style.color = '#F4F1EA'}
             onMouseLeave={e => e.target.style.color = '#C5A880'}
           >
-            hello@peedika.com
+            admin@peedikaconsultants.com
           </a>
         </div>
       </div>
@@ -119,7 +119,7 @@ const Navbar = ({ visible }) => {
               onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#2D5A52'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(27,59,54,0.3)'; }}
               onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#1B3B36'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(27,59,54,0.2)'; }}
             >
-              Get a Quote
+              Contact Us
             </a>
           </div>
 
