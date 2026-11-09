@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { EMAILJS_CONFIG } from '../config/emailjs';
 
+// Google Apps Script Web App URL — logs every lead to Google Sheets
+const SHEET_LOGGER_URL =
+  'https://script.google.com/macros/s/AKfycbx4HIiSjlawL8wQd_o_nWBVIeej-kUhlzFzfPSxM23NOZ6gweIWZ5GwT1rzWoaLMiSW0w/exec';
+
 const Contact = () => {
   const [form, setForm] = useState({
     name: '',
@@ -14,11 +18,34 @@ const Contact = () => {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setErrorMessage('');
+
+    // Validate mandatory fields (Project Details / message is optional)
+    const errors = {};
+    if (!form.name.trim()) errors.name = 'Please enter your name';
+    if (!form.brand.trim()) errors.brand = 'Please enter your brand or store name';
+    if (!form.email.trim()) {
+      errors.email = 'Please enter your email ID';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+    if (!form.phone.trim()) {
+      errors.phone = 'Please enter your phone number';
+    }
+    if (!form.city.trim()) errors.city = 'Please enter your target city';
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setErrorMessage('Please fill in all required fields marked with * before submitting.');
+      return;
+    }
+
+    setFieldErrors({});
+    setLoading(true);
 
     const { SERVICE_ID, TEMPLATE_ID_ADMIN, TEMPLATE_ID_CLIENT, PUBLIC_KEY } = EMAILJS_CONFIG;
     const isConfigured =
@@ -109,6 +136,25 @@ const Contact = () => {
         throw new Error(errors.join(' | '));
       }
 
+      // 3. Log lead to Google Sheets via GET request (works with no-cors)
+      try {
+        const params = new URLSearchParams({
+          from_name:    form.name,
+          from_email:   form.email,
+          phone_number: form.phone,
+          brand_name:   form.brand,
+          target_city:  form.city,
+          message:      form.message || '',
+        });
+        await fetch(`${SHEET_LOGGER_URL}?${params.toString()}`, {
+          method: 'GET',
+          mode: 'no-cors',
+        });
+        console.log('✅ Lead logged to Google Sheets');
+      } catch (sheetErr) {
+        console.warn('⚠️ Google Sheet logging failed (non-critical):', sheetErr);
+      }
+
       setLoading(false);
       setSubmitted(true);
     } catch (err) {
@@ -131,6 +177,7 @@ const Contact = () => {
     });
     setSubmitted(false);
     setErrorMessage('');
+    setFieldErrors({});
   };
 
   return (
@@ -359,7 +406,7 @@ const Contact = () => {
                         marginBottom: '6px',
                       }}
                     >
-                      {field.label}
+                      {field.label} {field.required && <span style={{ color: '#dc2626' }}>*</span>}
                     </label>
                     <input
                       type={field.type}
@@ -367,22 +414,42 @@ const Contact = () => {
                       required={field.required}
                       placeholder={field.placeholder}
                       value={form[field.name]}
-                      onChange={(e) => setForm({ ...form, [e.target.name]: e.target.value })}
+                      onChange={(e) => {
+                        setForm({ ...form, [e.target.name]: e.target.value });
+                        if (fieldErrors[e.target.name]) {
+                          setFieldErrors({ ...fieldErrors, [e.target.name]: '' });
+                        }
+                      }}
                       style={{
                         width: '100%',
                         padding: '11px 14px',
-                        border: '1.5px solid rgba(14,31,28,0.15)',
+                        border: fieldErrors[field.name]
+                          ? '1.5px solid #dc2626'
+                          : '1.5px solid rgba(14,31,28,0.15)',
+                        backgroundColor: fieldErrors[field.name] ? '#fff5f5' : '#ffffff',
                         borderRadius: '10px',
                         fontSize: '0.88rem',
-                        backgroundColor: '#ffffff',
                         color: '#0e1f1c',
                         outline: 'none',
-                        transition: 'border-color 0.2s',
+                        transition: 'border-color 0.2s, background-color 0.2s',
                         fontFamily: 'Inter, sans-serif',
                       }}
-                      onFocus={(e) => (e.target.style.borderColor = '#1B3B36')}
-                      onBlur={(e) => (e.target.style.borderColor = 'rgba(14,31,28,0.15)')}
+                      onFocus={(e) => (e.target.style.borderColor = fieldErrors[field.name] ? '#dc2626' : '#1B3B36')}
+                      onBlur={(e) => (e.target.style.borderColor = fieldErrors[field.name] ? '#dc2626' : 'rgba(14,31,28,0.15)')}
                     />
+                    {fieldErrors[field.name] && (
+                      <span
+                        style={{
+                          display: 'block',
+                          color: '#dc2626',
+                          fontSize: '0.72rem',
+                          fontWeight: 500,
+                          marginTop: '4px',
+                        }}
+                      >
+                        {fieldErrors[field.name]}
+                      </span>
+                    )}
                   </div>
                 ))}
 
