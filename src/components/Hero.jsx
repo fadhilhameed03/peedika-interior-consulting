@@ -315,7 +315,6 @@ const Hero = ({ scrollProgress = 0 }) => {
           }}
         >
           <span>📍 Headquarters: 39/2475-B1, SUITE N130 LR Towers, SJRRA 104, South Janatha Road, Kochi 68202</span>
-          <span style={{ color: 'rgba(197, 168, 128, 0.4)' }}>•</span>
         </div>
       </div>
     </header>
