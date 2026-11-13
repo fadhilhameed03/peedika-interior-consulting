@@ -257,7 +257,7 @@ const Contact = () => {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {[
-              { icon: '📍', title: 'Studio Headquarters', text: 'Kochi, Kerala • Executing Pan-India', href: null },
+              { icon: '📍', title: 'Headquarters', text: '39/2475-B1, SUITE N130 LR Towers, SJRRA 104, South Janatha Road, Kochi 68202', href: null },
               { icon: '✉️', title: 'Direct Inquiries', text: 'admin@peedikaconsultants.com', href: 'mailto:admin@peedikaconsultants.com' },
               { icon: '💬', title: 'WhatsApp', text: '+91 95629 20796', href: 'https://wa.me/919562920796' },
               { icon: '🚀', title: 'Turnkey Delivery', text: 'Space Planning • 3D Walkthroughs • GFC Drawings', href: null },
